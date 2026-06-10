@@ -1,10 +1,12 @@
+import React,{useEffect} from "react";
 import Card from "../components/ui/Card";
-import { users, orders, products } from "../mockData";
+import useData from "../hook/mockData";
 import "../lib/chartSetup";
+import {orders,products} from '../helperdata'
 
 import { Line, Bar } from "react-chartjs-2";
-
 export default function Dashboard() {
+  const {users} = useData()
   const stats = {
     users: users?.length || 0,
     orders: orders?.length || 0,
@@ -20,7 +22,7 @@ export default function Dashboard() {
     datasets: [
       {
         label: "Revenue",
-        data: orders.map((o) => o.amount || 0),
+        data: orders.map((o) => o.amount*Math.random()+2 || 0),
         borderColor: "#6366f1",
         backgroundColor: "rgba(99,102,241,0.15)",
         tension: 0.4,
@@ -170,6 +172,26 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
+      
+      {/* NEW: CHARTS ADDED WITHOUT DESIGN CHANGE */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+        <Card>
+          <h2 className="font-semibold mb-3">Revenue Trend</h2>
+          <Line data={revenueData} />
+        </Card>
+
+        <Card>
+          <h2 className="font-semibold mb-3">Order Trend</h2>
+          <Bar data={orderTrendData} />
+        </Card>
+
+        <Card>
+          <h2 className="font-semibold mb-3">User Activity</h2>
+          <Line data={userActivityData} />
+        </Card>
+
+      </div>
 
       {/* ACTIVITY + INSIGHTS (UNCHANGED) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -213,26 +235,6 @@ export default function Dashboard() {
             <p>💰 Stable upward growth across dataset</p>
           </div>
         </Card>
-      </div>
-
-      {/* NEW: CHARTS ADDED WITHOUT DESIGN CHANGE */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        <Card>
-          <h2 className="font-semibold mb-3">Revenue Trend</h2>
-          <Line data={revenueData} />
-        </Card>
-
-        <Card>
-          <h2 className="font-semibold mb-3">Order Trend</h2>
-          <Bar data={orderTrendData} />
-        </Card>
-
-        <Card>
-          <h2 className="font-semibold mb-3">User Activity</h2>
-          <Line data={userActivityData} />
-        </Card>
-
       </div>
 
     </div>

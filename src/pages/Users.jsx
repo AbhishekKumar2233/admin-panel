@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import Card from "../components/ui/Card";
+import useData from "../hook/mockData";
 
 const dummyUsers = [
   {
@@ -59,29 +60,28 @@ const dummyUsers = [
 ];
 
 export default function Users() {
+  const {users} = useData()
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
 
   const roles = ["All", "Admin", "Editor", "User", "Moderator"];
-
   const filtered = useMemo(() => {
-    return dummyUsers.filter((u) => {
+    return users.filter((u) => {
       const matchSearch =
         `${u.name} ${u.email} ${u.location}`
           .toLowerCase()
           .includes(search.toLowerCase());
 
-      const matchRole = roleFilter === "All" || u.role === roleFilter;
 
-      return matchSearch && matchRole;
+      return matchSearch;
     });
-  }, [search, roleFilter]);
+  }, [search,users]);
 
-  const activeCount = dummyUsers.filter(u => u.status === "Active").length;
-  const inactiveCount = dummyUsers.length - activeCount;
+  const activeCount = users.filter(u => u.status === true).length;
+  const inactiveCount = users.length - activeCount;
 
   const statusStyle = (status) =>
-    status === "Active"
+    status === true
       ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"
       : "bg-rose-50 text-rose-600 ring-1 ring-rose-100";
 
@@ -97,6 +97,22 @@ export default function Users() {
         return "bg-gray-50 text-gray-600 ring-1 ring-gray-100";
     }
   };
+
+  const timeAgo = (date) => {
+  const now = new Date().getTime();
+  const past = new Date(date).getTime();
+
+  const diff = now - past; // difference in milliseconds
+
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (minutes < 1) return "Just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  if (hours < 24) return `${hours} hr ago`;
+  return `${days} days ago`;
+};
 
   const initials = (name) =>
     name.split(" ").map(n => n[0]).join("").toUpperCase();
@@ -125,7 +141,7 @@ export default function Users() {
               className="px-4 py-2 text-sm rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none w-full md:w-72"
             />
 
-            <select
+            {/* <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
               className="px-3 py-2 text-sm rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -133,7 +149,7 @@ export default function Users() {
               {roles.map((r) => (
                 <option key={r}>{r}</option>
               ))}
-            </select>
+            </select> */}
           </div>
         </div>
 
@@ -191,7 +207,7 @@ export default function Users() {
                 </span>
 
                 <span className={`px-3 py-1 rounded-full text-xs ${statusStyle(user.status)}`}>
-                  {user.status}
+                  {user.status===true?'Active':'Inactive'}
                 </span>
               </div>
 
@@ -199,17 +215,17 @@ export default function Users() {
               <div className="text-right">
                 <p className="text-xs text-gray-400">Last active</p>
                 <p className="text-sm text-gray-600">
-                  {user.lastActive}
+                  {timeAgo(user.lastActive)}
                 </p>
 
-                <div className="flex gap-3 justify-end mt-2 text-sm">
+                {/* <div className="flex gap-3 justify-end mt-2 text-sm">
                   <button className="text-indigo-600 hover:underline">
                     Edit
                   </button>
                   <button className="text-rose-600 hover:underline">
                     Remove
                   </button>
-                </div>
+                </div> */}
               </div>
 
             </div>
